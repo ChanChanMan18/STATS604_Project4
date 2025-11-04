@@ -1,5 +1,7 @@
 .PHONY: all
 
-all:
-	@echo "--- Your mom ---"
+predictions:
 	Rscript initial_script.R
+
+rawdata:
+	Rscript load_data.R
