@@ -10,8 +10,8 @@ suppressMessages({
 
 train_peak_models <- function(
     features_file = "data/processed/modeling_features.rds",
-    hourly_models_file = "data/processed/models/hourly_load_models.rds",
-    output_dir = "data/processed/models") {
+    hourly_models_file = "models/hourly_load_models.rds",
+    output_dir = "models") {
   
   cat("Loading data...\n")
   features_list <- readRDS(features_file)
@@ -26,8 +26,9 @@ train_peak_models <- function(
   cat("\n=== Training Peak Hour Models ===\n")
   
   # Create daily aggregates with peak hour labels
+  # Filter to only rows with valid weather data first
   daily_data <- modeling_data |>
-    filter(!is.na(load)) |>
+    filter(!is.na(load), !is.na(temp_mean), !is.na(temp_max)) |>
     group_by(zone, date, year) |>
     summarize(
       peak_hour = hour[which.max(load)],
@@ -42,6 +43,12 @@ train_peak_models <- function(
       is_weekend = first(is_weekend),
       is_holiday = first(is_holiday),
       .groups = "drop"
+    ) |>
+    # Remove any days with invalid aggregations
+    filter(
+      is.finite(max_temp),
+      !is.na(mean_temp),
+      !is.na(max_load)
     )
   
   peak_hour_models <- list()
@@ -193,3 +200,5 @@ train_peak_models <- function(
 if (!interactive()) {
   train_peak_models()
 }
+
+

@@ -11,7 +11,7 @@ suppressMessages({
 
 train_models <- function(
     features_file = "data/processed/modeling_features.rds",
-    output_dir = "data/processed/models",
+    output_dir = "models",
     n_trees = 100,
     mtry = NULL) {
   
@@ -177,3 +177,4 @@ train_models <- function(
 if (!interactive()) {
   train_models(n_trees = 100)
 }
+
