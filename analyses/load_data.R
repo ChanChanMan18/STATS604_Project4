@@ -11,11 +11,13 @@ kv <- function(flag, default = NA_character_) {
 
 DATA_DIR <- kv("--data-dir", Sys.getenv("DATA_DIR", "data/raw"))
 EXT_DIR  <- kv("--ext-dir",  Sys.getenv("EXT_DIR",  "data/external"))
-ANCHORS  <- kv("--anchors",  Sys.getenv("ANCHORS_CSV", file.path(EXT_DIR, "pjm_airport_anchors.csv")))
 OSF_URL  <- kv("--osf-url",
                Sys.getenv("PJM_OSF_ZIP_URL", "https://files.osf.io/v1/resources/Py3u6/providers/osfstorage/?zip="))
 TZ_LOCAL <- kv("--tz",       Sys.getenv("PJM_TZ", "America/New_York"))
 UA       <- Sys.getenv("NWS_USER_AGENT", "power-forecast/1.0")
+
+# Anchors file path - construct it properly
+ANCHORS  <- kv("--anchors", file.path(EXT_DIR, "pjm_airport_anchors.csv"))
 
 # ---- 0) wipe raw dir ----
 if (dir_exists(DATA_DIR)) suppressWarnings(dir_delete(DATA_DIR))
@@ -40,17 +42,39 @@ if (length(tars)) {
   walk(tars, ~ utils::untar(.x, exdir = DATA_DIR))
 }
 
-# ---- 2) weather download from airport anchors (equal weights) ----
-Sys.setenv(DATA_DIR = DATA_DIR)  # for download_weather_nws.R
+# ---- 2) Set environment variables for weather scripts ----
+Sys.setenv(DATA_DIR = DATA_DIR)
 Sys.setenv(PJM_TZ   = TZ_LOCAL)
 Sys.setenv(NWS_USER_AGENT = UA)
+Sys.setenv(EXT_DIR = EXT_DIR)
 
 # Must exist
 if (!file.exists(ANCHORS)) {
-  stop("Anchors CSV not found at: ", ANCHORS, call. = FALSE)
+  stop("Anchors CSV not found at: ", ANCHORS, "\n",
+       "  Expected location: ", file.path(EXT_DIR, "pjm_airport_anchors.csv"), "\n",
+       "  EXT_DIR is: ", EXT_DIR, "\n",
+       "  Please ensure the file exists at this location.",
+       call. = FALSE)
 }
 
+# Set ANCHORS_CSV for child scripts (after verifying file exists)
+Sys.setenv(ANCHORS_CSV = ANCHORS)
+
+# ---- 3) Download historical weather data (Open-Meteo) ----
+# November only for 2019, 2022, 2023, 2024 (excludes COVID years)
+if (file.exists("analyses/download_historical_weather.R")) {
+  source("analyses/download_historical_weather.R")
+  invisible(download_historical_weather_november(
+    anchors_csv = ANCHORS,
+    years = c(2019, 2022, 2023, 2024),
+    filter_timezone = TZ_LOCAL
+  ))
+}
+
+# ---- 4) Download tomorrow's forecast (NWS) ----
 source("analyses/download_weather_nws.R")
-invisible(download_nws_from_anchors(anchors_csv = ANCHORS,
-                                    filter_timezone = TZ_LOCAL,
-                                    save_raw_json = TRUE))
+invisible(download_nws_from_anchors(
+  anchors_csv = ANCHORS,
+  filter_timezone = TZ_LOCAL,
+  save_raw_json = TRUE
+))
