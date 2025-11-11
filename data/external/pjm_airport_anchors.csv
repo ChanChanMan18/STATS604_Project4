@@ -1,0 +1,59 @@
+load_area,airport_code,airport_name,city,lat,lon
+AECO,ACY,Atlantic City International,Atlantic City,39.3643,-74.4229
+AECO,MIV,Millville Municipal,Millville,39.4021,-75.0393
+AEPAPT,CRW,Yeager,Charleston,38.3498,-81.6326
+AEPAPT,ROA,Roanoke–Blacksburg,Roanoke,37.2709,-79.9414
+AEPIMP,FWA,Fort Wayne International,Fort Wayne,41.0793,-85.1394
+AEPIMP,SBN,South Bend International,South Bend,41.6764,-86.251
+AEPKPT,HTS,Tri-State (Huntington),Huntington,38.4192,-82.4452
+AEPKPT,SJS,Big Sandy Regional (FAA),Prestonsburg,37.6656,-82.7713
+AEPOPT,CMH,John Glenn Columbus Intl,Columbus,39.9612,-82.9988
+AEPOPT,LCK,Rickenbacker,Columbus,39.9612,-82.9988
+AP,MGW,Morgantown Municipal,Morgantown,39.6295,-79.9559
+AP,CKB,North Central West Virginia,Clarksburg,39.2806,-80.3445
+BC,BWI,Baltimore/Washington Intl,Baltimore,39.2904,-76.6122
+BC,MTN,Martin State,Middle River,39.3343,-76.4394
+CE,CLE,Cleveland Hopkins Intl,Cleveland,41.4993,-81.6944
+CE,BKL,Burke Lakefront,Cleveland,41.4993,-81.6944
+DAY,DAY,Dayton Intl,Dayton,39.7589,-84.1916
+DAY,SGH,Springfield–Beckley,Springfield,39.9242,-83.8088
+DEOK,CVG,Cincinnati/N. Kentucky,Cincinnati,39.1031,-84.512
+DEOK,LUK,Cincinnati Lunken,Cincinnati,39.1031,-84.512
+DOM,RIC,Richmond International,Richmond,37.5407,-77.436
+DOM,ORF,Norfolk International,Norfolk,36.8529,-75.978
+DPLCO,ILG,Wilmington,Wilmington,39.7391,-75.5398
+DPLCO,SBY,Salisbury Regional,Salisbury,38.3607,-75.5994
+DUQ,PIT,Pittsburgh International,Pittsburgh,40.4406,-79.9959
+DUQ,AGC,Allegheny County,West Mifflin,40.3637,-79.8664
+EASTON,ESN,Easton/Newnam Field,Easton,38.7743,-76.0763
+EASTON,SBY,Salisbury Regional,Salisbury,38.3607,-75.5994
+EKPC,LEX,Blue Grass,Lexington,38.0406,-84.5037
+EKPC,SME,Somerset–Pulaski County,Somerset,37.092,-84.604
+JC,MMU,Morristown,Morristown,40.7968,-74.4815
+JC,TEB,Teterboro,Teterboro,40.8529,-74.0613
+ME,RDG,Reading Regional,Reading,40.3356,-75.9269
+ME,LNS,Lancaster,Lancaster,40.0379,-76.3055
+OE,CAK,Akron–Canton,Akron,41.0814,-81.519
+OE,YNG,Youngstown–Warren,Youngstown,41.0998,-80.6495
+OVEC,PMH,Greater Portsmouth Regional,Portsmouth,38.7317,-82.9977
+OVEC,HTS,Tri-State (Huntington),Huntington,38.4192,-82.4452
+PAPWR,YNG,Youngstown–Warren,Youngstown,41.0998,-80.6495
+PAPWR,PIT,Pittsburgh International,Pittsburgh,40.4406,-79.9959
+PE,HGR,Hagerstown Regional,Hagerstown,39.6418,-77.7199
+PE,CBE,Greater Cumberland,Cumberland,39.6529,-78.7625
+PEPCO,DCA,Reagan National,Arlington,38.8816,-77.091
+PEPCO,IAD,Dulles,Sterling,39.0062,-77.4286
+PLCO,ABE,Lehigh Valley,Allentown,40.6023,-75.4714
+PLCO,MDT,Harrisburg Intl,Harrisburg,40.2732,-76.8867
+PN,ERI,Erie International,Erie,42.1292,-80.0851
+PN,SCE,University Park,State College,40.7934,-77.86
+PS,EWR,Newark Liberty Intl,Newark,40.7357,-74.1724
+PS,TTN,Trenton–Mercer,Trenton,40.2171,-74.7429
+RECO,TEB,Teterboro,Teterboro,40.8529,-74.0613
+RECO,SWF,Stewart International,Newburgh,41.5034,-74.0104
+SMECO,2W6,St. Mary’s County Regional (FAA),Leonardtown,38.291,-76.635
+SMECO,2W5,Maryland Airport (FAA),Indian Head,38.6,-77.018
+UGI,AVP,Wilkes-Barre/Scranton,Wilkes-Barre,41.2459,-75.8813
+UGI,IPT,Williamsport Regional,Williamsport,41.2412,-77.0011
+VMEU,MIV,Millville Municipal,Millville,39.4021,-75.0393
+VMEU,ACY,Atlantic City International,Atlantic City,39.3643,-74.4229
