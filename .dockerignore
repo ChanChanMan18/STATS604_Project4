@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# R
+.Rhistory
+.RData
+.Rproj.user
+*.Rproj
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.ipynb_checkpoints/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs (will be generated in container)
+data/processed/
+data/raw/load/current/
+data/raw/weather/current/
+data/raw/weather/csv/
+data/raw/weather/json/
+models/*.rds
+predictions.csv
+
+# Documentation
+README.md
+*.pdf
+*.html
+
+# Other
+*.log
+*.tmp
