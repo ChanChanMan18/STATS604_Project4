@@ -70,11 +70,3 @@ if (file.exists("analyses/download_historical_weather.R")) {
     filter_timezone = TZ_LOCAL
   ))
 }
-
-# ---- 4) Download tomorrow's forecast (NWS) ----
-source("analyses/download_weather_nws.R")
-invisible(download_nws_from_anchors(
-  anchors_csv = ANCHORS,
-  filter_timezone = TZ_LOCAL,
-  save_raw_json = TRUE
-))

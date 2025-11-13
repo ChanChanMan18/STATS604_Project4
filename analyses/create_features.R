@@ -271,9 +271,8 @@ create_modeling_features <- function(
     arrange(zone, datetime) |>
     group_by(zone) |>
     mutate(
-      # Lag features
-      load_lag1 = lag(load, 1),      # Previous hour
-      load_lag24 = lag(load, 24),    # Same hour yesterday
+      # Lag features - only keeping load_lag168 (same hour last week)
+      # Removed load_lag1 and load_lag24 due to data availability issues at prediction time
       load_lag168 = lag(load, 168),  # Same hour last week
       
       # Rolling averages
@@ -312,7 +311,16 @@ create_modeling_features <- function(
         HDH_hour = HDH_mean * hour,
         
         # Weekend-temperature interaction
-        temp_weekend = temp_mean * as.numeric(is_weekend)
+        temp_weekend = temp_mean * as.numeric(is_weekend),
+        
+        # Hour × day_of_week interaction (captures Mon 8am != Sat 8am patterns)
+        hour_dow = hour * day_of_week
+      )
+  } else {
+    modeling_data <- modeling_data |>
+      mutate(
+        # Hour × day_of_week interaction
+        hour_dow = hour * day_of_week
       )
   }
   
@@ -366,7 +374,7 @@ create_modeling_features <- function(
   cat("Weather data:", ifelse(has_weather, "YES", "NO"), "\n")
   
   cat("\nMissing values in key columns:\n")
-  key_cols <- c("load", "load_lag24", "load_lag168", "temp_mean", "load_roll_mean_24")
+  key_cols <- c("load", "load_lag168", "temp_mean", "load_roll_mean_24")
   for (col in key_cols) {
     if (col %in% names(modeling_data)) {
       n_missing <- sum(is.na(modeling_data[[col]]))
@@ -397,5 +405,4 @@ create_modeling_features <- function(
 if (!interactive()) {
   create_modeling_features()
 }
-
 

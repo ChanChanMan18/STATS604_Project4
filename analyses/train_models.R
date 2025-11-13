@@ -23,7 +23,7 @@ train_models <- function(
   
   # Remove rows with NA in key lag features (first hours of dataset)
   modeling_data <- modeling_data |>
-    filter(!is.na(load_lag1), !is.na(load_lag24))
+    filter(!is.na(load_lag168))
   
   # Define feature columns for modeling
   feature_cols <- c(
@@ -35,13 +35,13 @@ train_models <- function(
     "rh_mean", "precip_in", "wind_mph",
     "CDH_mean", "HDH_mean",
     
-    # Lag features
-    "load_lag1", "load_lag24", "load_lag168",
+    # Lag features (removed load_lag1 and load_lag24 for prediction-time availability)
+    "load_lag168",
     "load_roll_mean_24", "load_roll_max_24",
     "temp_lag1", "temp_lag24",
     
     # Interaction features
-    "temp_hour", "CDH_hour", "HDH_hour", "temp_weekend"
+    "temp_hour", "CDH_hour", "HDH_hour", "temp_weekend", "hour_dow"
   )
   
   # Remove any features with all NAs
@@ -177,4 +177,3 @@ train_models <- function(
 if (!interactive()) {
   train_models(n_trees = 100)
 }
-
