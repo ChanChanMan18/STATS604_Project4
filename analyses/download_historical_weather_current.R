@@ -21,18 +21,18 @@ download_historical_weather_november_current <- function(
   dir.create(file.path(WEATHER_DIR, "current"), showWarnings = FALSE, recursive = TRUE)
   
   # ===========================================================================
-  # Determine date range: November 1 through YESTERDAY
+  # Determine date range: November 1 through TODAY
   # ===========================================================================
   
   # Get current time in the target timezone
   now_local <- with_tz(Sys.time(), filter_timezone)
   
-  # Yesterday (we don't want today because it's incomplete)
-  yesterday <- as.Date(now_local) - days(1)
+  # Today (we need today's data for temperature lag features)
+  today <- as.Date(now_local)
   
   # Start of November
-  start_date <- as.Date(sprintf("%d-11-01", year(yesterday)))
-  end_date <- yesterday
+  start_date <- as.Date(sprintf("%d-11-01", year(today)))
+  end_date <- today
   
   cat("Downloading historical weather data:\n")
   cat("  Timezone:", filter_timezone, "\n")
@@ -40,8 +40,8 @@ download_historical_weather_november_current <- function(
   cat("  Date range:", as.character(start_date), "to", as.character(end_date), "\n\n")
   
   # Validate we're in November
-  if (month(yesterday) != 11) {
-    stop("This script is designed for November only. Current month: ", month.name[month(yesterday)])
+  if (month(today) != 11) {
+    stop("This script is designed for November only. Current month: ", month.name[month(today)])
   }
   
   start_str <- as.character(start_date)

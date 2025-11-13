@@ -71,9 +71,9 @@ download_weather_forecast <- function(
     a <- anchors[i, ]
     
     # Open-Meteo Forecast API URL
-    # Request 2 days to ensure we get all of tomorrow regardless of timezone
+    # Request 3 days to ensure we get all 24 hours of tomorrow regardless of current time
     url <- sprintf(
-      "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=UTC&forecast_days=2",
+      "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=UTC&forecast_days=3",
       a$lat, a$lon
     )
     

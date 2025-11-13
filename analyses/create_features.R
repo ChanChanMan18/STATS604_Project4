@@ -284,17 +284,11 @@ create_modeling_features <- function(
   # ===========================================================================
   # 7. Create weather-based lag features (if weather available)
   # ===========================================================================
+  # NOTE: temp_lag1 and temp_lag24 removed due to data availability issues at prediction time
+  # (would require tomorrow's weather data which doesn't exist yet)
   if (has_weather) {
     cat("Creating weather lag features...\n")
-    modeling_data <- modeling_data |>
-      arrange(zone, datetime) |>
-      group_by(zone) |>
-      mutate(
-        # Temperature lags
-        temp_lag1 = lag(temp_mean, 1),
-        temp_lag24 = lag(temp_mean, 24)
-      ) |>
-      ungroup()
+    # Removed temperature lags - forecast weather features are sufficient
   }
   
   # ===========================================================================
@@ -405,4 +399,3 @@ create_modeling_features <- function(
 if (!interactive()) {
   create_modeling_features()
 }
-

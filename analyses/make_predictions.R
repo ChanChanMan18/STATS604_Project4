@@ -48,33 +48,39 @@ make_predictions <- function(
   # Step 1: Download Current PJM Load Data
   # ===========================================================================
   diag("Step 1: Downloading current PJM load data...\n")
-  source("analyses/download_pjm_load_current.R")
-  pjm_result <- download_pjm_load_current(
-    filter_timezone = filter_timezone,
-    output_dir = data_dir
-  )
+  invisible(capture.output({
+    source("analyses/download_pjm_load_current.R")
+    pjm_result <- download_pjm_load_current(
+      filter_timezone = filter_timezone,
+      output_dir = data_dir
+    )
+  }))
   diag("\n")
   
   # ===========================================================================
   # Step 2: Download Current Historical Weather
   # ===========================================================================
   diag("Step 2: Downloading current historical weather...\n")
-  source("analyses/download_historical_weather_current.R")
-  hist_weather_result <- download_historical_weather_november_current(
-    anchors_csv = file.path(ext_dir, "pjm_airport_anchors.csv"),
-    filter_timezone = filter_timezone
-  )
+  invisible(capture.output({
+    source("analyses/download_historical_weather_current.R")
+    hist_weather_result <- download_historical_weather_november_current(
+      anchors_csv = file.path(ext_dir, "pjm_airport_anchors.csv"),
+      filter_timezone = filter_timezone
+    )
+  }))
   diag("\n")
   
   # ===========================================================================
   # Step 3: Download Tomorrow's Weather Forecast
   # ===========================================================================
   diag("Step 3: Downloading tomorrow's weather forecast...\n")
-  source("analyses/download_weather_forecast.R")
-  forecast_result <- download_weather_forecast(
-    anchors_csv = file.path(ext_dir, "pjm_airport_anchors.csv"),
-    filter_timezone = filter_timezone
-  )
+  invisible(capture.output({
+    source("analyses/download_weather_forecast.R")
+    forecast_result <- download_weather_forecast(
+      anchors_csv = file.path(ext_dir, "pjm_airport_anchors.csv"),
+      filter_timezone = filter_timezone
+    )
+  }))
   diag("\n")
   
   # ===========================================================================
@@ -113,7 +119,7 @@ make_predictions <- function(
   
   load_data <- load_data |>
     mutate(
-      datetime_beginning_ept = ymd_hms(datetime_beginning_ept, tz = filter_timezone)
+      datetime_beginning_ept = as.POSIXct(datetime_beginning_ept, tz = filter_timezone)
     ) |>
     rename(
       datetime = datetime_beginning_ept,
@@ -127,7 +133,7 @@ make_predictions <- function(
   # Standardize historical weather
   hist_weather <- hist_weather |>
     mutate(
-      time_ept = ymd_hms(time_ept, tz = filter_timezone)
+      time_ept = as.POSIXct(time_ept, tz = filter_timezone)
     ) |>
     rename(datetime = time_ept) |>
     select(-time_utc)
@@ -159,7 +165,7 @@ make_predictions <- function(
   # Standardize forecast weather
   forecast_weather <- forecast_weather |>
     mutate(
-      start_ept = ymd_hms(start_ept, tz = filter_timezone)
+      start_ept = as.POSIXct(start_ept, tz = filter_timezone)
     ) |>
     rename(datetime = start_ept) |>
     select(-start_utc)
@@ -200,6 +206,21 @@ make_predictions <- function(
       month = month(datetime)
     )
   
+  # Diagnostic: Check which hours are missing weather data
+  missing_weather_check <- tomorrow_data |>
+    group_by(hour) |>
+    summarize(n_missing_temp = sum(is.na(temp_mean)), .groups = "drop") |>
+    filter(n_missing_temp > 0)
+  
+  if (nrow(missing_weather_check) > 0) {
+    diag("  WARNING: Missing weather data for these hours:\n")
+    for (i in seq_len(nrow(missing_weather_check))) {
+      diag(sprintf("    Hour %02d: %d zones missing\n", 
+                   missing_weather_check$hour[i], 
+                   missing_weather_check$n_missing_temp[i]))
+    }
+  }
+  
   # For each zone, compute lag features from historical data
   diag("  Computing lag features from historical data...\n")
   
@@ -218,12 +239,11 @@ make_predictions <- function(
     
     # Check if we have enough historical data
     if (nrow(zone_hist) < 168) {
-      cat("  WARNING: Zone", zone_name, "has only", nrow(zone_hist), "hours of historical data\n")
+      diag("  WARNING: Zone", zone_name, "has only", nrow(zone_hist), "hours of historical data\n")
     }
     
     # For each hour tomorrow, compute lag features
-    # NOTE: We only use load_lag168 (last week) because load_lag1 and load_lag24
-    # require today's data which isn't available yet from PJM
+    # NOTE: temp_lag1 and temp_lag24 removed - would require tomorrow's weather data
     zone_tomorrow <- zone_tomorrow |>
       rowwise() |>
       mutate(
@@ -233,25 +253,6 @@ make_predictions <- function(
           lag168_data <- zone_hist |> filter(datetime == lag168_time)
           if (nrow(lag168_data) > 0 && !is.na(lag168_data$load[1])) {
             lag168_data$load[1]
-          } else {
-            NA_real_
-          }
-        },
-        # Weather lags from yesterday
-        temp_lag1 = {
-          lag1_time <- datetime - hours(1)
-          lag1_data <- zone_hist |> filter(datetime == lag1_time)
-          if (nrow(lag1_data) > 0 && !is.na(lag1_data$temp_mean[1])) {
-            lag1_data$temp_mean[1]
-          } else {
-            NA_real_
-          }
-        },
-        temp_lag24 = {
-          lag24_time <- datetime - hours(24)
-          lag24_data <- zone_hist |> filter(datetime == lag24_time)
-          if (nrow(lag24_data) > 0 && !is.na(lag24_data$temp_mean[1])) {
-            lag24_data$temp_mean[1]
           } else {
             NA_real_
           }
@@ -323,9 +324,9 @@ make_predictions <- function(
   na_counts <- sapply(tomorrow_data, function(x) sum(is.na(x)))
   na_features <- na_counts[na_counts > 0]
   if (length(na_features) > 0) {
-    cat("  WARNING: Found missing values in features:\n")
+    diag("  WARNING: Found missing values in features:\n")
     for (feat in names(na_features)) {
-      cat(sprintf("    %-30s: %d NAs\n", feat, na_features[feat]))
+      diag(sprintf("    %-30s: %d NAs\n", feat, na_features[feat]))
     }
   }
   
@@ -356,9 +357,6 @@ make_predictions <- function(
           # For load lags/rolling features, use zone mean if available
           zone_mean <- model_info$zone_stats$load_mean
           pred_data[[col]][is.na(pred_data[[col]])] <- zone_mean
-        } else if (col %in% c("temp_lag1", "temp_lag24")) {
-          # For temp lags, use forward fill from current temp
-          pred_data[[col]][is.na(pred_data[[col]])] <- pred_data$temp_mean[1]
         } else if (is.numeric(pred_data[[col]])) {
           # For other numeric features, use column median or 0
           pred_data[[col]][is.na(pred_data[[col]])] <- median(pred_data[[col]], na.rm = TRUE)
@@ -530,5 +528,5 @@ make_predictions <- function(
 # ==============================================================================
 
 if (!interactive()) {
-  make_predictions()
+  make_predictions(verbose = FALSE)
 }
