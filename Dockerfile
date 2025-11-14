@@ -4,7 +4,7 @@
 # Platform: linux/amd64
 # ==============================================================================
 
-FROM --platform=linux/amd64 jupyter/r-notebook:latest
+FROM jupyter/r-notebook:latest
 
 USER root
 
